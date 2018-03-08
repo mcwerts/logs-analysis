@@ -1,13 +1,14 @@
-LOGS ANALYSIS
+Logs Analysis
 =============
 
-INTRO
-=====
+##INTRO
 
 
 
-USAGE
-=====
+##USAGE
+> python3 logs-analysis.py
+
+##Requirements
 
 
 
