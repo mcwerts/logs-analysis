@@ -1,20 +1,37 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 #
-# logs-analysis.py --
+# logs-analysis.py -- Report for top 3 articles, author rankings, and
+#                     days with errors above the 1% threshold.
 #
 
 import psycopg2
 
-SQL_TOP3_ARTICLES_QUERY = """
-    SELECT * FROM articles_by_pop ORDER BY num LIMIT 3;
-    """
 
 def connect():
     """Connect to the PostgreSQL database.  Returns a database connection."""
     return psycopg2.connect("dbname=news")
 
+def printHeader():
+    db = connect()
+    c = db.cursor()
+
+    c.execute("SELECT min(time) FROM log;")
+    rows = c.fetchall()
+    start = rows[0][0];
+
+    c.execute("SELECT max(time) FROM log;")
+    rows = c.fetchall()
+    end = rows[0][0]
+
+    db.commit()
+    db.close()
+
+    print("Site Activity Report")
+    print("{} TO {}".format(
+        start.date().isoformat(), end.date().isoformat()))
+
+
 def defineViews():
-    print("Define Views")
     db = connect()
     c = db.cursor()
 
@@ -29,7 +46,6 @@ def defineViews():
     # create the views
     # Top 3 articles and top authors
 
-    #time not needed?
     c.execute("""
         CREATE VIEW log_article_200 AS
             SELECT replace(path, '/article/', '') as slug, time
@@ -48,15 +64,12 @@ def defineViews():
             FROM log_article_200, title_slug_name
             WHERE log_article_200.slug = title_slug_name.slug;""")
 
-
-
-
     db.commit()
     db.close()
 
+
 def printTopArticlesReport():
-    print("\n[1] TOP 3 ARTICLES")
-    print("===================")
+    print("\n-1- TOP 3 ARTICLES\n")
     db = connect()
     c = db.cursor()
     c.execute("""
@@ -66,15 +79,16 @@ def printTopArticlesReport():
         ORDER BY views DESC
         LIMIT 3;""")
     rows = c.fetchall();
+
     db.commit()
     db.close
+    print("{:^7}  {}".format("Views", "Title"))
     for i, row in enumerate(rows):
-        print(rows[i])
+        print("{:7}  {}".format(rows[i][1], rows[i][0]))
 
 
 def printTopAuthorsReport():
-    print("\n[2] TOP AUTHORS")
-    print("================")
+    print("\n-2- TOP AUTHORS\n")
     db = connect()
     c = db.cursor()
     c.execute("""
@@ -82,15 +96,17 @@ def printTopAuthorsReport():
         FROM title_slug_name_log
         GROUP BY name
         ORDER BY views DESC;""")
-    rows = c.fetchall();
+    rows = c.fetchall()
     db.commit()
-    db.close
+    db.close()
+
+    print("{:^7}  {}".format("Views", "Author"))
     for i, row in enumerate(rows):
-        print(rows[i])
+        print("{:7}  {}".format(rows[i][1], rows[i][0]))
 
 def printErrorReport():
-    print("\n[3] DAYS WITH ERRORS OVER 1% THRESHOLD")
-    print("=======================================")
+    print("\n-3- DAYS WITH ERRORS OVER 1% THRESHOLD\n")
+
     db = connect()
     c = db.cursor()
 
@@ -105,9 +121,6 @@ def printErrorReport():
         CREATE VIEW day_log AS
             SELECT to_char(time, 'YYYY-MM-DD') AS day, status FROM log;
         """)
-
-#    create view log_get as
-#        select day, count(*) as gets from day_log group by day;
 
     c.execute("""
         CREATE VIEW log_200 AS
@@ -147,24 +160,10 @@ def printErrorReport():
 
     c.execute("SELECT * FROM errors_over_1p WHERE errp > 1;")
     rows = c.fetchall()
+
+    print("{:^10}  {}".format("Date", "Error Rate"))
     for i, row in enumerate(rows):
-        print(rows[i])
-
-    db.commit()
-    db.close()
-
-def printHeader():
-    print("ACTIVITY REPORT FOR PERIOD DATE1 TO DATE2")
-    db = connect()
-    c = db.cursor()
-
-    c.execute("SELECT min(time) FROM log;")
-    rows = c.fetchall()
-    print(rows)
-
-    c.execute("SELECT max(time) FROM log;")
-    rows = c.fetchall()
-    print(rows)
+        print("{:10}  {}".format(rows[i][0], rows[i][3]))
 
     db.commit()
     db.close()
@@ -176,4 +175,3 @@ if __name__ == '__main__':
     printTopArticlesReport()
     printTopAuthorsReport()
     printErrorReport()
-    print("\n*** END OF REPORT ***")
