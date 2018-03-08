@@ -154,6 +154,20 @@ def printErrorReport():
     db.close()
 
 def printHeader():
+    print("ACTIVITY REPORT FOR PERIOD DATE1 TO DATE2")
+    db = connect()
+    c = db.cursor()
+
+    c.execute("SELECT min(time) FROM log;")
+    rows = c.fetchall()
+    print(rows)
+
+    c.execute("SELECT max(time) FROM log;")
+    rows = c.fetchall()
+    print(rows)
+
+    db.commit()
+    db.close()
 
 
 if __name__ == '__main__':
