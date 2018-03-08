@@ -12,6 +12,9 @@ def connect():
     return psycopg2.connect("dbname=news")
 
 def printHeader():
+    """Print a simple report header with begin and end dates
+    extracted from the data."""
+
     db = connect()
     c = db.cursor()
 
@@ -31,21 +34,20 @@ def printHeader():
         start.date().isoformat(), end.date().isoformat()))
 
 
-def defineViews():
+def defineTSNLView():
+    """Define the title_slug_name_log (TSNL) view used for both the
+    articles and authors reporting."""
+
     db = connect()
     c = db.cursor()
 
-    # The order of these view operations is IMPORTANT
-    # top 3 articles and top authors
+    # The order of these view operations is IMPORTANT. The
+    # list is in reverse dependency order.
     c.execute("DROP VIEW IF EXISTS title_slug_name_log;")
     c.execute("DROP VIEW IF EXISTS log_article_200;")
     c.execute("DROP VIEW IF EXISTS title_slug_name;")
 
-    # errors
-
-    # create the views
-    # Top 3 articles and top authors
-
+    # Create the views
     c.execute("""
         CREATE VIEW log_article_200 AS
             SELECT replace(path, '/article/', '') as slug, time
@@ -69,6 +71,8 @@ def defineViews():
 
 
 def printTopArticlesReport():
+    """Output the top 3 articles to the console."""
+
     print("\n-1- TOP 3 ARTICLES\n")
     db = connect()
     c = db.cursor()
@@ -88,15 +92,20 @@ def printTopArticlesReport():
 
 
 def printTopAuthorsReport():
+    """Output all the authors, ordered according to page views from
+    highest to lowest."""
+
     print("\n-2- TOP AUTHORS\n")
     db = connect()
     c = db.cursor()
+
     c.execute("""
         SELECT name, count(*) AS views
         FROM title_slug_name_log
         GROUP BY name
         ORDER BY views DESC;""")
     rows = c.fetchall()
+
     db.commit()
     db.close()
 
@@ -104,19 +113,23 @@ def printTopAuthorsReport():
     for i, row in enumerate(rows):
         print("{:7}  {}".format(rows[i][1], rows[i][0]))
 
+
 def printErrorReport():
+    """Print days with greater than 1% error responses."""
+
     print("\n-3- DAYS WITH ERRORS OVER 1% THRESHOLD\n")
 
     db = connect()
     c = db.cursor()
 
-    # Errors
+    # Drop any pre-existing views
     c.execute("DROP VIEW IF EXISTS errors_over_1p;")
     c.execute("DROP VIEW IF EXISTS log_200_404;")
     c.execute("DROP VIEW IF EXISTS log_200;")
     c.execute("DROP VIEW IF EXISTS log_404;")
     c.execute("DROP VIEW IF EXISTS day_log;")
 
+    # Define new views
     c.execute("""
         CREATE VIEW day_log AS
             SELECT to_char(time, 'YYYY-MM-DD') AS day, status FROM log;
@@ -170,8 +183,8 @@ def printErrorReport():
 
 
 if __name__ == '__main__':
-    defineViews()
     printHeader()
+    defineTSNLView()
     printTopArticlesReport()
     printTopAuthorsReport()
     printErrorReport()
