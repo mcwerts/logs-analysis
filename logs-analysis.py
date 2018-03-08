@@ -11,6 +11,7 @@ def connect():
     """Connect to the PostgreSQL database.  Returns a database connection."""
     return psycopg2.connect("dbname=news")
 
+
 def printHeader():
     """Print a simple report header with begin and end dates
     extracted from the data."""
@@ -20,7 +21,7 @@ def printHeader():
 
     c.execute("SELECT min(time) FROM log;")
     rows = c.fetchall()
-    start = rows[0][0];
+    start = rows[0][0]
 
     c.execute("SELECT max(time) FROM log;")
     rows = c.fetchall()
@@ -82,7 +83,7 @@ def printTopArticlesReport():
         GROUP BY title
         ORDER BY views DESC
         LIMIT 3;""")
-    rows = c.fetchall();
+    rows = c.fetchall()
 
     db.commit()
     db.close
