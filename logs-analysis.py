@@ -22,12 +22,10 @@ def printHeader():
     c = db.cursor()
 
     c.execute("SELECT min(time) FROM log;")
-    rows = c.fetchall()
-    start = rows[0][0]
+    start = c.fetchone()[0]
 
     c.execute("SELECT max(time) FROM log;")
-    rows = c.fetchall()
-    end = rows[0][0]
+    end = c.fetchone()[0]
 
     db.commit()
     db.close()
