@@ -10,12 +10,12 @@ Analyze the sample database for an imagined news site. Determine three things.
 ## Usage
 Unzip the sample dataset.
 
-$ unzip newsdata.zip
+`$ unzip newsdata.zip`
 
 Load the data.
 
-$ psql -d news -f newsdata.sql
+`$ psql -d news -f newsdata.sql`
 
 Analyze the database.
 
-$ python3 logs-analysis.py
+`$ python3 logs-analysis.py`
