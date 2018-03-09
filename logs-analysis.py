@@ -117,7 +117,7 @@ def printErrorReport():
     # Define new views
     c.execute("""
         CREATE OR REPLACE VIEW day_log AS
-            SELECT to_char(time, 'YYYY-MM-DD') AS day, status FROM log;
+            SELECT time::date AS day, status FROM log;
         """)
 
     c.execute("""
@@ -144,7 +144,7 @@ def printErrorReport():
         """)
 
     c.execute("""
-        CREATE OR REPLACE VIEW errors_over_1p AS
+        CREATE OR REPLACE VIEW error_rate AS
             SELECT day, okpd, nfpd,
                 round(
                     cast(
@@ -156,12 +156,16 @@ def printErrorReport():
                 ORDER BY day;
         """)
 
-    c.execute("SELECT * FROM errors_over_1p WHERE errp > 1;")
+    c.execute("""
+        SELECT to_char(day, 'YYYY-MM-DD') as day, okpd, nfpd, errp
+            FROM error_rate
+            WHERE errp > 1;
+        """)
     rows = c.fetchall()
 
     print("{:^10}  {}".format("Date", "Error Rate"))
-    for i, row in enumerate(rows):
-        print("{:10}  {}".format(rows[i][0], rows[i][3]))
+    for day, okpd, nfpd, errp in rows:
+        print("{:10}  {}".format(day, errp))
 
     db.commit()
     db.close()
