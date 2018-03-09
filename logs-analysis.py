@@ -42,27 +42,21 @@ def defineTSNLView():
     db = connect()
     c = db.cursor()
 
-    # The order of these view operations is IMPORTANT. The
-    # list is in reverse dependency order.
-    c.execute("DROP VIEW IF EXISTS title_slug_name_log;")
-    c.execute("DROP VIEW IF EXISTS log_article_200;")
-    c.execute("DROP VIEW IF EXISTS title_slug_name;")
-
     # Create the views
     c.execute("""
-        CREATE VIEW log_article_200 AS
+        CREATE OR REPLACE VIEW log_article_200 AS
             SELECT replace(path, '/article/', '') as slug, time
             FROM log
             WHERE path != '/' and status = '200 OK';""")
 
     c.execute("""
-        CREATE VIEW title_slug_name AS
+        CREATE OR REPLACE VIEW title_slug_name AS
             SELECT title, slug, name
             FROM authors, articles
             WHERE authors.id = articles.author;""")
 
     c.execute("""
-        CREATE VIEW title_slug_name_log AS
+        CREATE OR REPLACE VIEW title_slug_name_log AS
             SELECT title, log_article_200.slug, name
             FROM log_article_200, title_slug_name
             WHERE log_article_200.slug = title_slug_name.slug;""")
@@ -120,28 +114,21 @@ def printErrorReport():
     db = connect()
     c = db.cursor()
 
-    # Drop any pre-existing views
-    c.execute("DROP VIEW IF EXISTS errors_over_1p;")
-    c.execute("DROP VIEW IF EXISTS log_200_404;")
-    c.execute("DROP VIEW IF EXISTS log_200;")
-    c.execute("DROP VIEW IF EXISTS log_404;")
-    c.execute("DROP VIEW IF EXISTS day_log;")
-
     # Define new views
     c.execute("""
-        CREATE VIEW day_log AS
+        CREATE OR REPLACE VIEW day_log AS
             SELECT to_char(time, 'YYYY-MM-DD') AS day, status FROM log;
         """)
 
     c.execute("""
-        CREATE VIEW log_200 AS
+        CREATE OR REPLACE VIEW log_200 AS
             SELECT day, count(*) AS okpd
                 FROM day_log WHERE status = '200 OK'
                 GROUP BY day;
         """)
 
     c.execute("""
-        CREATE VIEW log_404 AS
+        CREATE OR REPLACE VIEW log_404 AS
             SELECT day, count(*) AS nfpd
                 FROM day_log
                 WHERE status = '404 NOT FOUND'
@@ -149,7 +136,7 @@ def printErrorReport():
         """)
 
     c.execute("""
-        CREATE VIEW log_200_404 AS
+        CREATE OR REPLACE VIEW log_200_404 AS
             SELECT log_200.day, okpd, nfpd
                 FROM log_200 FULL OUTER JOIN log_404
                 ON log_200.day = log_404.day
@@ -157,7 +144,7 @@ def printErrorReport():
         """)
 
     c.execute("""
-        CREATE VIEW errors_over_1p AS
+        CREATE OR REPLACE VIEW errors_over_1p AS
             SELECT day, okpd, nfpd,
                 round(
                     cast(
