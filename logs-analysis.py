@@ -27,7 +27,6 @@ def printHeader():
     c.execute("SELECT max(time) FROM log;")
     end = c.fetchone()[0]
 
-    db.commit()
     db.close()
 
     print("Site Activity Report")
@@ -85,7 +84,6 @@ def printTopArticlesReport():
         LIMIT 3;""")
     rows = c.fetchall()
 
-    db.commit()
     db.close
     print("{:^7}  {}".format("Views", "Title"))
     for i, row in enumerate(rows):
@@ -108,7 +106,6 @@ def printTopAuthorsReport():
         ORDER BY views DESC;""")
     rows = c.fetchall()
 
-    db.commit()
     db.close()
 
     print("{:^7}  {}".format("Views", "Author"))
