@@ -8,6 +8,7 @@ import psycopg2
 
 db_name = 'news'
 
+
 def connect():
     """Connect to the PostgreSQL database, return a database connection."""
     return psycopg2.connect("dbname={}".format(db_name))
