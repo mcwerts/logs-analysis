@@ -1,21 +1,22 @@
 #!/usr/bin/env python3
-#
-# logs-analysis.py -- Report for top 3 articles, author rankings, and
-#                     days with errors above the 1% threshold.
-#
+"""Report top articles, authors, and error days.
 
+Report top 3 articles, author rankings, and days with errors above the
+1% threshold.
+"""
 import psycopg2
 
 
 def connect():
-    """Connect to the PostgreSQL database.  Returns a database connection."""
+    """Connect to the PostgreSQL database, return a database connection."""
     return psycopg2.connect("dbname=news")
 
 
 def printHeader():
-    """Print a simple report header with begin and end dates
-    extracted from the data."""
+    """Print a simple report header.
 
+    Extract begin and end dates from the data.
+    """
     db = connect()
     c = db.cursor()
 
@@ -36,9 +37,10 @@ def printHeader():
 
 
 def defineTSNLView():
-    """Define the title_slug_name_log (TSNL) view used for both the
-    articles and authors reporting."""
+    """Define the title_slug_name_log (TSNL) view.
 
+    Used for both the articles and authors reporting.
+    """
     db = connect()
     c = db.cursor()
 
@@ -73,7 +75,6 @@ def defineTSNLView():
 
 def printTopArticlesReport():
     """Output the top 3 articles to the console."""
-
     print("\n-1- TOP 3 ARTICLES\n")
     db = connect()
     c = db.cursor()
@@ -93,9 +94,10 @@ def printTopArticlesReport():
 
 
 def printTopAuthorsReport():
-    """Output all the authors, ordered according to page views from
-    highest to lowest."""
+    """Output the authors rankings.
 
+    Order according to page views from highest to lowest.
+    """
     print("\n-2- TOP AUTHORS\n")
     db = connect()
     c = db.cursor()
@@ -117,7 +119,6 @@ def printTopAuthorsReport():
 
 def printErrorReport():
     """Print days with greater than 1% error responses."""
-
     print("\n-3- DAYS WITH ERRORS OVER 1% THRESHOLD\n")
 
     db = connect()
