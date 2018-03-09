@@ -6,10 +6,11 @@ Report top 3 articles, author rankings, and days with errors above the
 """
 import psycopg2
 
+db_name = 'news'
 
 def connect():
     """Connect to the PostgreSQL database, return a database connection."""
-    return psycopg2.connect("dbname=news")
+    return psycopg2.connect("dbname={}".format(db_name))
 
 
 def printHeader():
