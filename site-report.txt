@@ -1,0 +1,22 @@
+Site Activity Report
+2016-07-01 TO 2016-07-31
+
+-1- TOP 3 ARTICLES
+
+ Views   Title
+ 338647  Candidate is jerk, alleges rival
+ 253801  Bears love berries, alleges bear
+ 170098  Bad things gone, say good people
+
+-2- TOP AUTHORS
+
+ Views   Author
+ 507594  Ursula La Multa
+ 423457  Rudolf von Treppenwitz
+ 170098  Anonymous Contributor
+  84557  Markoff Chaney
+
+-3- DAYS WITH ERRORS OVER 1% THRESHOLD
+
+   Date     Error Rate
+2016-07-17  2.26
