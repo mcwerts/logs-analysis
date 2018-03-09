@@ -80,8 +80,8 @@ def printTopArticlesReport():
 
     db.close
     print("{:^7}  {}".format("Views", "Title"))
-    for i, row in enumerate(rows):
-        print("{:7}  {}".format(rows[i][1], rows[i][0]))
+    for title, views in rows:
+        print("{:7}  {}".format(views, title))
 
 
 def printTopAuthorsReport():
@@ -103,8 +103,8 @@ def printTopAuthorsReport():
     db.close()
 
     print("{:^7}  {}".format("Views", "Author"))
-    for i, row in enumerate(rows):
-        print("{:7}  {}".format(rows[i][1], rows[i][0]))
+    for author, views in rows:
+        print("{:7}  {}".format(views, author))
 
 
 def printErrorReport():
