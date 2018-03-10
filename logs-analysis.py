@@ -6,7 +6,7 @@ Report top 3 articles, author rankings, and days with errors above the
 """
 import psycopg2
 
-db_name = 'missingnews'
+db_name = 'news'
 
 
 def connect():
