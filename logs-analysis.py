@@ -6,7 +6,7 @@ Report top 3 articles, author rankings, and days with errors above the
 """
 import psycopg2
 
-db_name = 'news'
+db_name = 'missingnews'
 
 
 def connect():
@@ -173,8 +173,11 @@ def printErrorReport():
 
 
 if __name__ == '__main__':
-    printHeader()
-    defineTSNLView()
-    printTopArticlesReport()
-    printTopAuthorsReport()
-    printErrorReport()
+    try:
+        printHeader()
+        defineTSNLView()
+        printTopArticlesReport()
+        printTopAuthorsReport()
+        printErrorReport()
+    except psycopg2.Error as e:
+        print(e)
